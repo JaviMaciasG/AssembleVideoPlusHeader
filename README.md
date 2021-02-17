@@ -21,3 +21,13 @@ The scripts will:
 
 + Concatenate the title video + the main video + the title video 
 
+# Usage
+
+bash go.gen-header+video+footer.sh <title_image_file> <video_input_file> <video_output_file>
+
+# Disclaimer
+
+This is just a quick & dirty hack, with bash excerpts from many useful scripts. In particular the fade-in fade-out script is slightly adapted from one by Gilles Quenot.
+
+
+
