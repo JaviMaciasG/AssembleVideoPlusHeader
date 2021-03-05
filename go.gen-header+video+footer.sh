@@ -74,8 +74,8 @@ bash go.fadeinout.sh $VIDEO_INPUT_FILE $TMP_VIDEO2
 ((err > 0)) && exit 1
 
 # Now concatenate
-echo "Concatenating files to generate [$VIDEO_OUTPUT_FILE]"
-ffmpeg -y -i $TMP_VIDEO1 -i $TMP_VIDEO2 -i $TMP_VIDEO1 -filter_complex "[0:v][0:a][1:v][1:a][2:v][2:a] concat=n=3:v=1:a=1[v][a]" -map "[v]" -map "[a]" $VIDEO_OUTPUT_FILE >& /dev/null
+echo "Concatenating files to generate [VIDEO_OUTPUT_FILE]"
+ffmpeg -y -i $TMP_VIDEO1 -i $TMP_VIDEO2 -i $TMP_VIDEO1 -filter_complex "[0:v][0:a][1:v][1:a][2:v][2:a] concat=n=3:v=1:a=1[v][a]:unsafe=1" -map "[v]" -map "[a]" $VIDEO_OUTPUT_FILE >& /dev/null
 ((err > 0)) && exit 1
 
 
