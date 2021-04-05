@@ -48,16 +48,16 @@ HEADER_VIDEO=`mktemp`.mp4
 
 
 echo "Generating header/footer video [$HEADER_VIDEO] from [$HEADER_FILE]"
-(ffmpeg -y -r $FRAME_RATE_Q -loop 1 -i $1 -c:v libx264 -vf "fps=$FRAME_RATE_F,scale=$WIDTH:$HEIGHT" -pix_fmt yuv420p  -t $HEADER_LENGTH_SECONDS $TMP_VIDEO >& /dev/null) 
-(($? > 0)) && echo "Error generating header/footer video from image file" && exit 1
+(ffmpeg -y -r $FRAME_RATE_Q -loop 1 -i $1 -c:v libx264 -vf "fps=$FRAME_RATE_F,scale=$WIDTH:$HEIGHT" -pix_fmt yuv420p  -t $HEADER_LENGTH_SECONDS $TMP_VIDEO >& $TMP_VIDEO.log) 
+(($? > 0)) && echo "Error generating header/footer video from image file. Logfile generated $TMP_VIDEO.log" && exit 1
 
 echo "Generating audio for header/footer video [$TMP_AUDIO]"
 (sox -n -r 16000 -c 1 $TMP_AUDIO trim 0.0 $HEADER_LENGTH_SECONDS)
 (($? > 0)) && echo "Error generating audio silence file" && exit 1
 
 echo "Generating merged audio and video for header/footer [$HEADER_VIDEO]"
-(ffmpeg -y -i $TMP_VIDEO -i $TMP_AUDIO -c:v copy -c:a aac $HEADER_VIDEO >& /dev/null) 
-(($? > 0)) && echo "Error merging header video and audio" && exit 1
+(ffmpeg -y -i $TMP_VIDEO -i $TMP_AUDIO -c:v copy -c:a aac $HEADER_VIDEO >& $HEADER_VIDEO.log) 
+(($? > 0)) && echo "Error merging header video and audio. Logfile generated $HEADER_VIDEO.log" && exit 1
 
 # Find out number of frames
 NFRAMES_HEADER=`ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 $HEADER_VIDEO`
@@ -78,10 +78,11 @@ bash go.fadeinout.sh $VIDEO_INPUT_FILE $TMP_VIDEO2
 (($? > 0)) && echo "Error in call to go.fadeinout.sh for video file" && exit 1
 
 
-# Now concatenate
-echo "Concatenating files to generate [$VIDEO_OUTPUT_FILE]"
-ffmpeg -y -i $TMP_VIDEO1 -i $TMP_VIDEO2 -i $TMP_VIDEO1 -filter_complex "[0:v][0:a][1:v][1:a][2:v][2:a] concat=n=3:v=1:a=1[v][a]:unsafe=1" -map "[v]" -map "[a]" $VIDEO_OUTPUT_FILE >& /dev/null
-(($? > 0)) && echo "Error when concatenating files" && exit 1
+# Now concatenate. SOMETIMES THE UNSAFE=1 OPTION GENERATES AN ERROR
+echo "Concatenating files [$TMP_VIDEO1]+[$TMP_VIDEO2]+[$TMP_VIDEO1] to generate [$VIDEO_OUTPUT_FILE]"
+#ffmpeg -y -i $TMP_VIDEO1 -i $TMP_VIDEO2 -i $TMP_VIDEO1 -filter_complex "[0:v][0:a][1:v][1:a][2:v][2:a] concat=n=3:v=1:a=1[v][a]:unsafe=1" -map "[v]" -map "[a]" $VIDEO_OUTPUT_FILE >& $VIDEO_OUTPUT_FILE.log
+ffmpeg -y -i $TMP_VIDEO1 -i $TMP_VIDEO2 -i $TMP_VIDEO1 -filter_complex "[0:v][0:a][1:v][1:a][2:v][2:a] concat=n=3:v=1:a=1[v][a]" -map "[v]" -map "[a]" $VIDEO_OUTPUT_FILE >& $VIDEO_OUTPUT_FILE.log
+(($? > 0)) && echo "Error when concatenating files. Logfile generated $VIDEO_OUTPUT_FILE.log" && exit 1
 
 
 
