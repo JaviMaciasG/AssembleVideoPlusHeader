@@ -26,6 +26,7 @@ then
     exit 2
 fi
 
+echo "$0 Processing [$1] [$2] [$3]..."
 
 ## Find out video details
 VIDEO_RESOLUTION=`ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $VIDEO_INPUT_FILE`
