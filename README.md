@@ -27,7 +27,7 @@ bash go.gen-header+video+footer.sh <title_image_file> <video_input_file> <video_
 
 # Disclaimer
 
-This is just a quick & dirty hack, with bash excerpts from many useful scripts. In particular the fade-in fade-out script is slightly adapted from (https://superuser.com/questions/386065/is-there-a-way-to-add-a-fade-to-black-effect-to-a-video-from-the-command-line/970647#970647)[one by Gilles Quenot].
+This is just a quick & dirty hack, with bash excerpts from many useful scripts. In particular the fade-in fade-out script is slightly adapted from [one by Gilles Quenot](https://superuser.com/questions/386065/is-there-a-way-to-add-a-fade-to-black-effect-to-a-video-from-the-command-line/970647#970647).
 
 
 
